@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+</body>
+<script>
+    let messages = [
+        "Sivak Hico9:05 AM",
+        "attendance",
+        "Victor Fdez9:06 AM",
+        "hi im having troubles with the microphon and the speakers.",
+        "brb",
+        "You9:11 AM",
+        "dont worry it gets worse :D",
+        "Malaiz9:12 AM",
+        "Very reassuring, Chris.",
+        "You9:12 AM",
+        ":D",
+    ]
+    for (let counter = 0; counter < messages.length; counter++) {
+        document.querySelector("body").innerHTML += "<input type='checkbox'>" + messages[counter] + "</input>"
+    }
+</script>
+
+</html>

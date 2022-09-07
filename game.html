@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>computer program</title>
+</head>
+
+<body></body>
+<script type="module">
+    const SPEED = 200;
+    const BULLET_SPEED = 800;
+    let LAST_FIRED_TIME = 0;
+    const COOLDOWN_SEC = 0.5;
+    import kaboom from "https://unpkg.com/kaboom/dist/kaboom.mjs";
+    kaboom();
+    loadSprite("ak", "ak-47.png")
+    loadSprite("mushroom", "https://raw.githubusercontent.com/replit/kaboom/master/assets/sprites/mushroom.png")
+    loadSprite("lemon", "https://raw.githubusercontent.com/replit/kaboom/master/assets/sprites/lemon.png")
+    loadSprite("spike", "https://raw.githubusercontent.com/replit/kaboom/master/assets/sprites/spike.png")
+    loadSprite("grass", "https://raw.githubusercontent.com/replit/kaboom/master/assets/sprites/grass.png")
+
+    const lookAt = (from, to) => Math.atan2(to.y - from.y, to.x - from.x) * 180 / Math.PI;
+    const lvl = [
+        "                          $",
+        "                          $",
+        "                          $",
+        "                          $",
+        "                          $",
+        "                          $",
+        "                          $",
+        "           $$         =   $",
+        "  %      ====         =   $",
+        "                      =    ",
+        "       ^^      = >    =   &",
+        "===========================",
+    ]
+    addLevel(lvl, {
+        // define the size of each block window.width / 27
+        width: window.innerWidth / lvl[0].length,
+        height: window.innerHeight / lvl.length,
+        // define what each symbol means, by a function returning a component list (what will be passed to add())
+        "=": () => [
+            sprite("grass"),
+            area(),
+            solid(),
+        ],
+        "$": () => [
+            sprite("lemon"),
+            "lemon",
+            area(),
+        ],
+        "^": () => [
+            sprite("spike"),
+            area(),
+            pos(0, 40),
+            "danger",
+        ],
+    })
+    add([text(document.title), pos(120, 80)]);
+    loadBean()
+    const player = add([
+        sprite("bean"),
+        pos(120, 80),
+        area(),
+        origin("center"),
+        solid(), // TOGGLE FOR RPG 
+        // body() // TOGGLE FOR PLATFORMER
+    ])
+    function _fire() {
+        if (player.exists()) {
+            const dir = mousePos().sub(player.pos).unit()
+            shake(120)
+            add([
+                pos(player.pos),
+                move(dir, BULLET_SPEED),
+                sprite("mushroom"),
+                area(),
+                cleanup(),
+                solid(),
+                origin("center"),
+                "bullet",
+            ])
+        }
+    }
+    onUpdate(() => {
+        isKeyDown("a") && player.move(-SPEED, 0)
+        isKeyDown("d") && player.move(SPEED, 0)
+        isKeyDown("w") && player.move(0, -SPEED)
+        isKeyDown("s") && player.move(0, SPEED)
+        mouseDeltaPos().x > 30 || mouseDeltaPos().y > 30 && _fire()
+        if (isMouseDown("left")) {
+            if (LAST_FIRED_TIME + COOLDOWN_SEC < time()) {
+                LAST_FIRED_TIME = time()
+                _fire()
+            }
+        }
+    })
+    onDraw(() => {
+        drawSprite({
+            sprite: "ak",
+            width: 140,
+            height: 100,
+            pos: player.pos,
+            angle: lookAt(player.pos, mousePos()),
+        })
+        drawLine({
+            p1: player.pos,
+            p2: mousePos(),
+            width: 1,
+            color: rgb(0, 255, 255),
+        })
+    })
+    player.onCollide("lemon", (lemon) => {
+        destroy(lemon)
+        burp()
+    })
+</script>
+
+</html>
